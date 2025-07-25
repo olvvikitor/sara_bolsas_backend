@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // ou mysql/sqlserver/sqlite conforme o seu setup
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id       String  @id @default(uuid())
+  email    String  @unique
+  password String
+}
+
+model Categoria {
+  id       String          @id @default(uuid())
+  nome     String
+  tipo     TipoCategoria   // 'MASCULINA' | 'FEMININA'
+  subcategorias Subcategoria[]
+}
+
+enum TipoCategoria {
+  MASCULINA
+  FEMININA
+}
+
+model Subcategoria {
+  id          String      @id @default(uuid())
+  nome        String
+  categoriaId String
+  categoria   Categoria   @relation(fields: [categoriaId], references: [id])
+  produtos    Produto[]
+}
+
+model Produto {
+  id                String          @id @default(uuid())
+  nome              String
+  preco             Float
+  descricao         String
+  largura           Float
+  altura            Float
+  emPromocao        Boolean
+  precoPromocional  Float?          // obrigatório se emPromocao = true
+  imagemInterna     String
+  imagemExterna     String?
+  subcategoriaId    String
+  subcategoria      Subcategoria   @relation(fields: [subcategoriaId], references: [id])
+  colecoes          ProdutoColecao[]
+  estoque           Estoque?
+  vendas            VendaProduto[]
+
+  PedidoItem PedidoItem[]
+}
+
+model Colecao {
+  id          String           @id @default(uuid())
+  nome        String
+  descricao   String
+  produtos    ProdutoColecao[]
+}
+
+model ProdutoColecao {
+  produtoId  String
+  colecaoId  String
+  produto    Produto  @relation(fields: [produtoId], references: [id])
+  colecao    Colecao  @relation(fields: [colecaoId], references: [id])
+
+  @@id([produtoId, colecaoId])
+}
+
+model EntradaFinanceira {
+  id            String          @id @default(uuid())
+  origem        String          // Ex: WhatsApp, Presencial
+  nomeCliente   String?
+  descricao     String
+  valor         Float
+  data          DateTime
+  comprovante   String?         // URL da imagem
+  produtos      VendaProduto[]
+}
+
+model VendaProduto {
+  id              String           @id @default(uuid())
+  entradaId       String
+  produtoId       String
+  entrada         EntradaFinanceira @relation(fields: [entradaId], references: [id])
+  produto         Produto          @relation(fields: [produtoId], references: [id])
+}
+
+model SaidaFinanceira {
+  id          String    @id @default(uuid())
+  nome        String
+  descricao   String
+  valor       Float
+  data        DateTime
+  comprovante String?
+}
+
+model Estoque {
+  id              String    @id @default(uuid())
+  produtoId       String    @unique
+  produto         Produto   @relation(fields: [produtoId], references: [id])
+  quantidade      Float
+  unidade         String    // un, kg, m², etc.
+  alertaMinimo    Boolean
+  quantidadeMinima Float?
+}
+
+model BannerHome {
+  id        String  @id @default(uuid())
+  imagem    String
+}
+
+model ImagemDestaque {
+  id         String  @id @default(uuid())
+  imagem     String
+  titulo     String
+  link       String? // pode ser URL ou ID de produto/coleção
+}
+
+
+model Cliente {
+  id       String   @id @default(uuid())
+  nome     String
+  email    String   @unique
+  senha    String
+  cpf      String   @unique
+  telefone String?
+  enderecos Endereco[]
+  pedidos   Pedido[]
+}
+
+model Endereco {
+  id        String   @id @default(uuid())
+  clienteId String
+  cliente   Cliente  @relation(fields: [clienteId], references: [id])
+  cep       String
+  logradouro String
+  numero     String
+  complemento String?
+  bairro     String
+  cidade     String
+  estado     String
+  padrao     Boolean
+  Pedido Pedido[]
+}
+
+model Pedido {
+  id            String     @id @default(uuid())
+  clienteId     String
+  cliente       Cliente    @relation(fields: [clienteId], references: [id])
+  data          DateTime   @default(now())
+  status        StatusPedido
+  total         Float
+  enderecoId    String
+  endereco      Endereco   @relation(fields: [enderecoId], references: [id])
+  pagamento     MetodoPagamento
+  itens         PedidoItem[]
+}
+
+enum StatusPedido {
+  AGUARDANDO_PAGAMENTO
+  ENVIADO
+  ENTREGUE
+}
+
+enum MetodoPagamento {
+  PIX
+  CARTAO
+  BOLETO
+}
+
+model PedidoItem {
+  id         String   @id @default(uuid())
+  pedidoId  String
+  produtoId String
+  produto   Produto   @relation(fields: [produtoId], references: [id])
+  tamanho   String
+  quantidade Int
+  preco     Float
+
+  Pedido Pedido[]
+}
+
+model Contato {
+  id       String   @id @default(uuid())
+  nome     String
+  email    String
+  assunto  String
+  mensagem String
+  criadoEm DateTime @default(now())
+}
