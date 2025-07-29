@@ -1,21 +1,69 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CreateCategoriaDto } from '../dtos/create-category-dto';
 import CreateCategoriaService from '../services/create-categoria.service';
 import { ModuleRef } from '@nestjs/core';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import FindCategoriaService from '../services/get-categoria.service';
+import UpdateCategoriaService from '../services/update-categoria.service';
+import ResponseCategoryDto from '../dtos/response-categoria-dto';
 
-
+@ApiTags('Categorias') // Nome da seção no Swagger UI
 @Controller('categoria')
-export default class CategoriaController{
-
-  constructor (private moduleRefs:ModuleRef) {
-    
-  }
+export default class CategoriaController {
+  constructor(private moduleRefs: ModuleRef) {}
 
   @Post('new')
-  public async createNewCategoria(@Body() createCategoriaDto:CreateCategoriaDto){
-    const createCategoriaService : CreateCategoriaService = this.moduleRefs.get(CreateCategoriaService)
-    return await createCategoriaService.creatNewCategoria(createCategoriaDto)
-
+  @ApiOperation({ summary: 'Cria uma nova categoria' })
+  @ApiResponse({ status: 201, description: 'Categoria criada com sucesso.', type: ResponseCategoryDto })
+  @ApiResponse({ status: 400, description: 'Dados inválidos enviados.' })
+  @ApiBody({ type: CreateCategoriaDto, description: 'Dados para criação de categoria', examples: {
+    exemplo: {
+      summary: 'Exemplo de categoria',
+      value: { nome: 'Bolsas', descricao: 'Categoria de bolsas femininas' }
+    }
+  }})
+  public async createNewCategoria(@Body() createCategoriaDto: CreateCategoriaDto) {
+    const createCategoriaService: CreateCategoriaService = this.moduleRefs.get(CreateCategoriaService);
+    return await createCategoriaService.creatNewCategoria(createCategoriaDto);
   }
 
+  @Get('getById/:id')
+  @ApiOperation({ summary: 'Busca por uma categoria por id' })
+  @ApiResponse({ status: 200, description: 'Categoria encontrada.', type: ResponseCategoryDto })
+  @ApiResponse({ status: 404, description: 'Categoria não encontrada.' })
+  public async getCategoriaById(@Param('id') id: string) {
+    const findcategoriaService: FindCategoriaService = this.moduleRefs.get(FindCategoriaService);
+    return await findcategoriaService.findCategoriaById(id);
+  }
+
+  @Get('getByNome/:nome')
+  @ApiOperation({ summary: 'Busca por uma categoria pelo nome' })
+  @ApiResponse({ status: 200, description: 'Categoria encontrada.', type: ResponseCategoryDto })
+  @ApiResponse({ status: 404, description: 'Categoria não encontrada.' })
+  public async getAllCategoria(@Param('nome') nome: string) {
+    const findcategoriaService: FindCategoriaService = this.moduleRefs.get(FindCategoriaService);
+    return await findcategoriaService.findCategoriaByName(nome);
+  }
+  @Get('getAll')
+  @ApiOperation({ summary: 'Busca por todas as categoria' })
+  @ApiResponse({ status: 200, description: 'Categoria encontrada.', type: Array<ResponseCategoryDto> })
+  public async getCategoriaByNome() {
+    const findcategoriaService: FindCategoriaService = this.moduleRefs.get(FindCategoriaService);
+    return await findcategoriaService.findAllCategoria();
+  }
+
+  @Post('update/:id')
+  @ApiOperation({ summary: 'Atualiza uma categoria pelo id' })
+  @ApiResponse({ status: 200, description: 'Categoria atualizada com sucesso.', type: ResponseCategoryDto })
+  @ApiResponse({ status: 404, description: 'Categoria não encontrada.' })
+  @ApiBody({ type: CreateCategoriaDto, description: 'Dados para atualização da categoria', examples: {
+    exemplo: {
+      summary: 'Exemplo de atualização',
+      value: { nome: 'Bolsas Atualizadas', descricao: 'Nova descrição' }
+    }
+  }})
+  public async updateById(@Param('id') id: string, @Body() payload: CreateCategoriaDto) {
+    const updateCategoriaService: UpdateCategoriaService = this.moduleRefs.get(UpdateCategoriaService);
+    return await updateCategoriaService.updateCategoriaById(id, payload);
+  }
 }
