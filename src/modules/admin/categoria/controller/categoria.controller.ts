@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CreateCategoriaDto } from '../dtos/create-category-dto';
 import CreateCategoriaService from '../services/create-categoria.service';
 import { ModuleRef } from '@nestjs/core';
@@ -56,6 +56,7 @@ export default class CategoriaController {
   @ApiOperation({ summary: 'Atualiza uma categoria pelo id' })
   @ApiResponse({ status: 200, description: 'Categoria atualizada com sucesso.', type: ResponseCategoryDto })
   @ApiResponse({ status: 404, description: 'Categoria não encontrada.' })
+  @ApiResponse({ status: 409, description: 'Categoria já existente.' })
   @ApiBody({ type: CreateCategoriaDto, description: 'Dados para atualização da categoria', examples: {
     exemplo: {
       summary: 'Exemplo de atualização',
@@ -65,5 +66,13 @@ export default class CategoriaController {
   public async updateById(@Param('id') id: string, @Body() payload: CreateCategoriaDto) {
     const updateCategoriaService: UpdateCategoriaService = this.moduleRefs.get(UpdateCategoriaService);
     return await updateCategoriaService.updateCategoriaById(id, payload);
+  }
+  @Delete('delete/:id')
+  @ApiOperation({ summary: 'Deleta uma categoria pelo id' })
+  @ApiResponse({ status: 201, description: 'Categoria deletada com sucesso.'})
+  @ApiResponse({ status: 404, description: 'Categoria não encontrada.' })
+  public async deleteById(@Param('id') id: string) {
+    const updateCategoriaService: UpdateCategoriaService = this.moduleRefs.get(UpdateCategoriaService);
+    return await updateCategoriaService.deleteCategoriaById(id);
   }
 }
