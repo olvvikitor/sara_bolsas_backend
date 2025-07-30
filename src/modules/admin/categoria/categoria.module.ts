@@ -11,6 +11,6 @@ import UpdateCategoriaService from './services/update-categoria.service';
   imports:[ConfigModuleAplication],
   controllers:[CategoriaController],
   providers:[CategoriaRepository, CreateCategoriaService,FindCategoriaService,UpdateCategoriaService],
-  exports:[CreateCategoriaService,FindCategoriaService,UpdateCategoriaService]
+  exports:[CategoriaRepository,CreateCategoriaService,FindCategoriaService,UpdateCategoriaService]
 })
 export default class CategoriaModule{}
