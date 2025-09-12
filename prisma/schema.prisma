@@ -18,6 +18,8 @@ model Categoria {
   nome     String
   tipo     TipoCategoria   // 'MASCULINA' | 'FEMININA'
   subcategorias Subcategoria[]
+
+  Produto Produto[]
 }
 
 enum TipoCategoria {
@@ -42,9 +44,11 @@ model Produto {
   altura            Float
   emPromocao        Boolean
   precoPromocional  Float?          // obrigatório se emPromocao = true
-  imagemInterna     String
-  imagemExterna     String?
+  imagemInterna     String[]
+  imagemExterna     String[]
   subcategoriaId    String
+  categoriaId String
+  categoria Categoria @relation(fields: [categoriaId], references: [id])
   subcategoria      Subcategoria   @relation(fields: [subcategoriaId], references: [id])
   colecoes          ProdutoColecao[]
   estoque           Estoque?

@@ -20,6 +20,7 @@ export default class ProductController{
       const urlImages = await Promise.all(images.map( async (img) =>
         await this.storageProvider.upload(img)
       ))
-      console.log(urlImages)
+      createProductDto.images = urlImages
+      createProductService.createNewProduct(createProductDto)
   }
 }

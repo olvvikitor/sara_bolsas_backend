@@ -6,5 +6,7 @@ export class CreateProductDto {
   altura:number
   emPromocao:boolean
   precoPromocional?:number
-  subcategoria:string
+  id_categoria:string
+  id_subcategoria:string
+  images?:string[]
 }
