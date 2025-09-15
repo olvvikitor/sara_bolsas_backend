@@ -11,15 +11,16 @@ export default class ProductRepository{
   async createNewProduct(payload:CreateProductDto):Promise<void>{
     await this.prismaService.produto.create({
       data:{
-        altura:payload.altura,
+        altura: payload.altura,
         descricao:payload.descricao,
-        emPromocao:payload.emPromocao,
+        emPromocao: payload.emPromocao,
         largura:payload.largura,
         nome:payload.nome,
-        imagemInterna:payload.images,
         preco:payload.preco,
-        precoPromocional:payload.precoPromocional,
         subcategoriaId:payload.id_subcategoria,
+        categoriaId:payload.id_categoria,
+        precoPromocional:payload.precoPromocional,
+        imagemExterna:payload.img
       }
     })
   }

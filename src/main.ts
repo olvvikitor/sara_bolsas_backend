@@ -18,7 +18,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, documentFactory);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   await app.listen(process.env.PORT ?? 3000);
-  console.log(`API AVAILABLE IN ${process.env.URL}`)
-  console.log(`DOCS AVAILABLE IN ${process.env.URL}/api/docs`)
+  console.log(`API AVAILABLE IN http://localhost:3000`)
+  console.log(`DOCS AVAILABLE IN http://localhost:3000/api/docs`)
 }
 bootstrap();
