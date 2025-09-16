@@ -113,6 +113,6 @@ export class CreateProductDto {
   @IsOptional()
   img_interna?: Express.Multer.File[];
 
-  img_interna_url?: string[]
-  img_externa_url?: string[]
+  img_interna_url: string[]
+  img_externa_url: string[]
 }
