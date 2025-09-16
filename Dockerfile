@@ -1,22 +1,44 @@
-# =========================
-# Runner final
-# =========================
-FROM node:20-alpine AS runner
+# Usa uma imagem do Node.js com versão leve
+FROM node:20-alpine AS builder
+
+# Define o diretório de trabalho
+WORKDIR /app
+
+# Copia arquivos essenciais para instalação das dependências
+COPY package.json package-lock.json ./
+
+# Instala as dependências
+RUN npm install
+
+# Copia o código do projeto
+COPY . .
+
+
+# Gera os arquivos do Prisma Client
+RUN npx prisma generate
+
+
+
+
+# Compila a aplicação NestJS para produção
+RUN npm run build
+
+# ========================
+# Fase final (imagem menor)
+# ========================
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Copia só o necessário do build
+# Copia os arquivos necessários da fase anterior
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/dist ./dist
 
-# Instala apenas dependências de produção
-RUN npm install --omit=dev --legacy-peer-deps
 
-# Gera o Prisma Client (com base no schema copiado)
-RUN npx prisma generate
-
+# Expõe a porta do NestJS
 EXPOSE 3000
 
-# Executa migrations e inicia a aplicação
+# Executa as migrations e inicia a aplicação
 CMD npx prisma migrate deploy && node dist/main.js
