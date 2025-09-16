@@ -38,4 +38,4 @@ COPY --from=builder /app/.env ./  # importante se você usar Prisma com env
 EXPOSE 3000
 
 # Executa migrations e inicia o app
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+CMD npx prisma migrate deploy && node dist/main.js
