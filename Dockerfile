@@ -1,41 +1,22 @@
 # =========================
-# Fase 1: Build da aplicação
+# Runner final
 # =========================
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copia os arquivos necessários para instalar as dependências
-COPY package.json package-lock.json ./
-
-# Instala dependências (com npm 7+ pode precisar de legacy-peer-deps)
-RUN npm install --legacy-peer-deps
-
-# Copia o restante da aplicação
-COPY . .
-
-# Gera o Prisma Client
-RUN npx prisma generate
-
-# Compila a aplicação
-RUN npm run build
-
-
-# =========================
-# Fase 2: Imagem final leve
-# =========================
-FROM node:20-alpine
-
-WORKDIR /app
-
-# Copia apenas o necessário da imagem anterior
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+# Copia só o necessário do build
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/.env ./  # importante se você usar Prisma com env
+COPY --from=builder /app/dist ./dist
+
+# Instala apenas dependências de produção
+RUN npm install --omit=dev --legacy-peer-deps
+
+# Gera o Prisma Client (com base no schema copiado)
+RUN npx prisma generate
 
 EXPOSE 3000
 
-# Executa migrations e inicia o app
+# Executa migrations e inicia a aplicação
 CMD npx prisma migrate deploy && node dist/main.js
