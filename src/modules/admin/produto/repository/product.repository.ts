@@ -20,7 +20,8 @@ export default class ProductRepository{
         subcategoriaId:payload.id_subcategoria,
         categoriaId:payload.id_categoria,
         precoPromocional:payload.precoPromocional,
-        imagemExterna:payload.img
+        imagemExterna:payload.img_externa_url,
+        imagemInterna:payload.img_interna_url
       }
     })
   }

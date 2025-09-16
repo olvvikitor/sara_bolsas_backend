@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateProductDto } from '../dtos/Product';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import IStorageProvider from 'src/shared/providers/storage/IStorageProvider';
 import CreateProdutoService from '../services/create.produto.service';
 import { ModuleRef } from '@nestjs/core';
@@ -31,29 +31,40 @@ export default class ProductController {
   @ApiBody({
     type: CreateProductDto,
   })
-  @UseInterceptors(FilesInterceptor('image', 2, { storage: memoryStorage() }))
+  @UseInterceptors(FileFieldsInterceptor([
+    {
+      name:'img_interna',
+      maxCount:1
+    },
+    {
+      name:'img_externa',
+      maxCount:3
+    }
+  ], { storage: memoryStorage() }))
   async createNewProduct(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'png',
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-          fileIsRequired: false,
-        }),
+    @UploadedFiles(
     )
-    img: Array<Express.Multer.File> | undefined,
+    files:{
+      img_interna?: Express.Multer.File[],
+      img_externa?: Express.Multer.File[],
+    } ,
     @Body() data: CreateProductDto,
   ): Promise<void> {
     const createProductService: CreateProdutoService =
-      this.moduleRefs.get(CreateProdutoService);
+    this.moduleRefs.get(CreateProdutoService);
 
-    if (img) {
+    if (files.img_externa) {
       const urlImages = await Promise.all(
-        img.map(async (img) => await this.storageProvider.upload(img)),
+        files.img_externa.map(async (img) => await this.storageProvider.upload(img)),
       );
-      data.img = urlImages;
+      data.img_externa_url = urlImages;
+    }
+
+    if (files.img_interna) {
+      const urlImages = await Promise.all(
+        files.img_interna.map(async (img) => await this.storageProvider.upload(img)),
+      );
+      data.img_interna_url = urlImages;
     }
 
     return createProductService.createNewProduct(data);

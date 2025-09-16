@@ -91,10 +91,28 @@ export class CreateProductDto {
   @ApiPropertyOptional({
     description: 'Imagem do produto',
     required: false,
-    type: [String],
-    format: 'binary', // Define como um arquivo binário
+    type: 'array',
+    items:{
+      type:'string',
+      format:'binary'
+    }
   })
   @IsOptional()
   @IsFileOrEmpty() // Valida que o campo será um arquivo
-  img?: string[]
+  img_externa?: Express.Multer.File[]
+
+  @ApiPropertyOptional({
+    description: 'Imagens internas do produto',
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
+    required: false,
+  })
+  @IsOptional()
+  img_interna?: Express.Multer.File[];
+
+  img_interna_url?: string[]
+  img_externa_url?: string[]
 }
