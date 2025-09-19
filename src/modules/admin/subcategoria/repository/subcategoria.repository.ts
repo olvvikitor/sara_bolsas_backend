@@ -28,7 +28,7 @@ export default class SubcategoriaRepository{
     })
   }
   public async getAllSubcategoria():Promise<Subcategoria[]>{
-    return await this.prismaService.subcategoria.findMany()
+    return await this.prismaService.subcategoria.findMany({ include: { categoria: true } })
   }
 
 }

@@ -10,4 +10,7 @@ export default class FindSubcategoryService {
   async findById(id: string): Promise<Subcategoria> {
     return await this.subcategoryRepository.getSubcategoriabyId(id);
   }
+  async findAll():Promise<Subcategoria[]>{
+    return await this.subcategoryRepository.getAllSubcategoria()
+  }
 }
