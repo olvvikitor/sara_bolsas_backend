@@ -1,5 +1,4 @@
 import { Test } from '@nestjs/testing';
-import SubcategoriaController from './subcategoria.controller';
 import FindSubcategoryService from '../services/findsubcategoryById';
 import SubcategoriaRepository from '../repository/subcategoria.repository';
 import { Subcategoria } from '@prisma/client';
@@ -7,18 +6,19 @@ import { subcategoryMock } from '../mocks/subcategoria.mocks';
 import CreateSubcategoriaService from '../services/create-subcategoria.service';
 import { categoriaMock } from '../../categoria/mocks/categoria.mock';
 import CategoriaRepository from '../../categoria/repository/categoria.repository';
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import FindCategoriaService from '../../categoria/services/get-categoria.service';
 
-describe('SubcategoriaController', () => {
-  let subcategoriaController: SubcategoriaController;
+describe('CreateSubcategoryService', () => {
+
   let findSubcategoryService: FindSubcategoryService;
   let createSubcategoriaService: CreateSubcategoriaService;
   let subcategoriaRepository: SubcategoriaRepository;
+  let getGategoryByIdService:FindCategoriaService
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
-      controllers: [SubcategoriaController],
       providers: [
-        FindSubcategoryService,
         CreateSubcategoriaService,
         {
           provide: SubcategoriaRepository,
@@ -32,9 +32,11 @@ describe('SubcategoriaController', () => {
             getSubcategoriabyName :jest
             .fn()
             .mockResolvedValue({subcategoryMock}),
+            getSubcategoriabyId :jest
+            .fn()
+            .mockResolvedValue({subcategoryMock}),
             getAllSubcategoria:jest
             .fn().mockResolvedValue({subcategoryMock})
-
           },
         },
         {
@@ -46,53 +48,47 @@ describe('SubcategoriaController', () => {
       ],
     }).compile();
 
-    subcategoriaController = moduleRef.get(SubcategoriaController);
     findSubcategoryService = moduleRef.get(FindSubcategoryService);
     createSubcategoriaService = moduleRef.get(CreateSubcategoriaService);
     subcategoriaRepository = moduleRef.get(SubcategoriaRepository);
+    getGategoryByIdService = moduleRef.get(FindCategoriaService)
   });
 
   it('Modulos definidos', () => {
     expect(subcategoriaRepository).toBeDefined();
     expect(findSubcategoryService).toBeDefined();
+    expect(createSubcategoriaService).toBeDefined();
+    
   });
 
-  describe('findAll', () => {
-    it('espera retornar um array de subcategoria', async () => {
-
-      // Configuramos o repositório mockado
-      (
-        subcategoriaRepository.getAllSubcategoria as jest.Mock
-      ).mockResolvedValue(subcategoryMock);
-
-      // Chamamos o método do controller
-      const response = await subcategoriaController.getAll();
-
-      // Verificamos se o resultado foi o esperado
-      expect(response).toEqual(subcategoryMock);
-
-      // Verificamos se o repo foi realmente chamado
-      expect(subcategoriaRepository.getAllSubcategoria).toHaveBeenCalled();
-    });
-  });
 
   describe('createNewSubcategoria', () => {
-    it('espera a criação de uma nova subcategoria', async () => {
+    it('espera erro na criação de uma nova subcategoria pois já existe uma com o mesmo nome', async () => {
       // Mock da categoria que já existe
       categoriaMock;
 
-      const dto = { nome: 'Carteiras', categoriaId: categoriaMock.id };
+      const dto = { nome: 'Clutch', categoriaId: categoriaMock.id };
 
-      (subcategoriaRepository.getSubcategoriabyName as jest.Mock).mockResolvedValue(null)
+      (subcategoriaRepository.getSubcategoriabyName as jest.Mock).mockResolvedValue(subcategoryMock)
 
-      // Chama o controller
-      const response = await subcategoriaController.createNewSubcategoria(dto);
+      await expect (createSubcategoriaService.createNewSubcategoria(dto))
+      .rejects
+      .toThrow(ConflictException)
+    });
+  });
+  
+  describe('createNewSubcategoria', () => {
+    it('espera erro na criação de uma nova subcategoria pois não existe uma categoria com esse id', async () => {
+      // Mock da categoria que já existe
+      categoriaMock;
 
-      // Verifica resultado
-      expect(response).toBeUndefined();
-      expect(subcategoriaRepository.createSubcategory).toHaveBeenCalledWith(
-        dto,
-      );
+      const dto = { nome: 'Clutch', categoriaId: 'id-nao-existente' };
+
+      (subcategoriaRepository.getSubcategoriabyId as jest.Mock).mockResolvedValue(subcategoryMock)
+
+      await expect (createSubcategoriaService.createNewSubcategoria(dto))
+      .rejects
+      .toThrow(NotFoundException)
     });
   });
 
