@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
   HttpStatus,
   Inject,
+  Param,
   ParseFilePipeBuilder,
   Post,
   UploadedFile,
@@ -18,8 +20,9 @@ import {
 import IStorageProvider from 'src/shared/providers/storage/IStorageProvider';
 import CreateProdutoService from '../services/create.produto.service';
 import { ModuleRef } from '@nestjs/core';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { memoryStorage } from 'multer';
+import FindProductsService from '../services/find-product.service';
 
 @ApiTags('Products')
 @Controller('product')
@@ -81,5 +84,22 @@ export default class ProductController {
 
 
     return createProductService.createNewProduct(data);
+  }
+  @ApiOperation({summary:'Busca por todos os produtos'})
+  @ApiResponse({status:200, description:'Produto encontrado com sucesso'})
+  @Get('all')
+  async findAll(){
+    const findProductService:FindProductsService = this.moduleRefs.get(FindProductsService)
+    return findProductService.findAll()
+  }
+
+
+  @ApiOperation({summary:'Busca por um produto com base no seu id'})
+  @ApiResponse({status:200, description:'Produto encontrado com sucesso'})
+  @ApiResponse({status:404, description:'Produto não encontrado'})
+  @Get('product:/id')
+  async findById(@Param('id') id:string){
+    const findProductService:FindProductsService = this.moduleRefs.get(FindProductsService)
+    return findProductService.findproductById(id)
   }
 }

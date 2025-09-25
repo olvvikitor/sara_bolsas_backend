@@ -6,10 +6,11 @@ import ProductRepository from './repository/product.repository';
 import { ConfigModuleAplication } from 'src/config/config.module';
 import SubcategoriaModule from '../subcategoria/subcategoria.module';
 import CategoriaModule from '../categoria/categoria.module';
+import FindProductsService from './services/find-product.service';
 
 @Module({
   imports:[ConfigModuleAplication,StorageModule,SubcategoriaModule, CategoriaModule],
   controllers:[ProductController],
-  providers:[CreateProdutoService, ProductRepository]
+  providers:[CreateProdutoService, FindProductsService, ProductRepository]
 })
 export default class ProductModule{}

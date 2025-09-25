@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, Produto } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma.service';
 import { CreateProductDto } from '../dtos/Product';
 
@@ -25,4 +25,15 @@ export default class ProductRepository{
       }
     })
   }
+  async findById(id:string):Promise<Produto>{
+    return await this.prismaService.produto.findFirst({
+      where:{
+        id:id
+      },
+    })
+  }
+  async findAll():Promise<Array<Produto>>{
+    return await this.prismaService.produto.findMany()
+  }
+
 }  
