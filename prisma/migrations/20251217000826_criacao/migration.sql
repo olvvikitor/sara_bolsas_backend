@@ -44,9 +44,10 @@ CREATE TABLE "Produto" (
     "altura" DOUBLE PRECISION NOT NULL,
     "emPromocao" BOOLEAN NOT NULL,
     "precoPromocional" DOUBLE PRECISION,
-    "imagemInterna" TEXT NOT NULL,
-    "imagemExterna" TEXT,
+    "imagemInterna" TEXT[],
+    "imagemExterna" TEXT[],
     "subcategoriaId" TEXT NOT NULL,
+    "categoriaId" TEXT NOT NULL,
 
     CONSTRAINT "Produto_pkey" PRIMARY KEY ("id")
 );
@@ -222,6 +223,9 @@ CREATE INDEX "_PedidoToPedidoItem_B_index" ON "_PedidoToPedidoItem"("B");
 
 -- AddForeignKey
 ALTER TABLE "Subcategoria" ADD CONSTRAINT "Subcategoria_categoriaId_fkey" FOREIGN KEY ("categoriaId") REFERENCES "Categoria"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Produto" ADD CONSTRAINT "Produto_categoriaId_fkey" FOREIGN KEY ("categoriaId") REFERENCES "Categoria"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Produto" ADD CONSTRAINT "Produto_subcategoriaId_fkey" FOREIGN KEY ("subcategoriaId") REFERENCES "Subcategoria"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

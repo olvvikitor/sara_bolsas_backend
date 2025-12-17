@@ -27,12 +27,11 @@ export class Diskprovider implements MulterOptionsFactory, IStorageProvider {
     // Salva o arquivo no disco
     await fs.promises.writeFile(filePath, file.buffer);
 
-    return `http://localhost:3000/uploads/${filename}`
+    return `https://sara-bolsas-backend.onrender.com//uploads/${filename}`
   }
 
   async get(filename: string): Promise<string> {
-    return `http://localhost:3000/uploads/${filename}`
-   
+    return `https://sara-bolsas-backend.onrender.com//uploads/${filename}`
   }
 
   async delete(url: string | undefined): Promise<void> {
