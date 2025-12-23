@@ -1,28 +1,37 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { CreateCategoriaDto } from '../dtos/create-category-dto';
 import CreateCategoriaService from '../services/create-categoria.service';
 import { ModuleRef } from '@nestjs/core';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import FindCategoriaService from '../services/get-categoria.service';
 import UpdateCategoriaService from '../services/update-categoria.service';
 import ResponseCategoryDto from '../dtos/response-categoria-dto';
+import { AdminJwtPayload, AuthGuard } from 'src/shared/providers/auth/AuthGuard';
+import { Admin } from '../../decorators/Admin';
 
 @ApiTags('Categorias') // Nome da seção no Swagger UI
 @Controller('categoria')
 export default class CategoriaController {
   constructor(private moduleRefs: ModuleRef) {}
 
+  @UseGuards(AuthGuard)
   @Post('new')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Cria uma nova categoria' })
   @ApiResponse({ status: 201, description: 'Categoria criada com sucesso.', type: ResponseCategoryDto })
   @ApiResponse({ status: 400, description: 'Dados inválidos enviados.' })
   @ApiBody({ type: CreateCategoriaDto, description: 'Dados para criação de categoria', examples: {
     exemplo: {
       summary: 'Exemplo de categoria',
-      value: { nome: 'Bolsas', descricao: 'Categoria de bolsas femininas' }
+      value: { nome: 'Bolsas', descricao: 'Categoria de bolsas femininas' , tipo_categoria: 'FEMININA'}
     }
   }})
-  public async createNewCategoria(@Body() createCategoriaDto: CreateCategoriaDto) {
+  @UseGuards(AuthGuard)
+  public async createNewCategoria(
+   @Admin() admin:AdminJwtPayload, @Body() createCategoriaDto: CreateCategoriaDto) {
+    if(admin.type !== 'ADMIN'){
+      throw new UnauthorizedException('Acesso negado');
+    }
     const createCategoriaService: CreateCategoriaService = this.moduleRefs.get(CreateCategoriaService);
     return await createCategoriaService.creatNewCategoria(createCategoriaDto);
   }

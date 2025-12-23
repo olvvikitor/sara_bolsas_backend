@@ -6,6 +6,8 @@ import ProductModule from './modules/admin/produto/product.module';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import LoginAdminModule from './modules/admin/login/loginAdmin.module';
+import { AuthModule } from './shared/providers/auth/auth.module';
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { join } from 'path';
       serveRoot: '/uploads',
     }),
 
-    CategoriaModule, SubcategoriaModule, ProductModule],
+    CategoriaModule, SubcategoriaModule, ProductModule, LoginAdminModule,AuthModule],
   controllers: [],
   providers: [],
 })
