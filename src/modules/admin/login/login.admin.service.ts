@@ -3,7 +3,7 @@ import { AdminRepository } from "./admin.repository";
 import { LoginAdminDTO } from "./dtos/LoginAdminDTO";
 import { JwtService } from "@nestjs/jwt";
 import { IhashProvider } from "src/shared/providers/hash/IhashProvider";
-import { AdminJwtPayload } from "src/shared/providers/auth/AuthGuard";
+import { AdminJwtPayload, ClientJwtPayload } from "src/shared/providers/auth/AuthGuard";
 
 @Injectable()
 export class LoginAdminService {

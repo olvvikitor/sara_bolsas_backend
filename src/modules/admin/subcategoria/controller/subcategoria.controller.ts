@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
 import { CreateSubcategoriaDto } from '../dtos/create_subcategoria.dto';
 import { ModuleRef } from '@nestjs/core';
 import CreateSubcategoriaService from '../services/create-subcategoria.service';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import FindCategoriaService from '../../categoria/services/get-categoria.service';
 import FindSubcategoryService from '../services/findsubcategoryById';
+import { AdminJwtPayload, AuthGuard } from 'src/shared/providers/auth/AuthGuard';
+import { Admin } from '../../decorators/Admin';
 
 @ApiTags('Subcategorias')
 @Controller('subcategoria')
@@ -13,6 +15,8 @@ export default class SubcategoriaController {
   constructor(private modulesRefs: ModuleRef) {}
 
   @Post('new')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Cria uma nova subcategoria' })
   @ApiResponse({ status: 201, description: 'Subcategoria criada com sucesso.' })
   @ApiResponse({ status: 400, description: 'Dados inválidos enviados.' })
@@ -30,7 +34,7 @@ export default class SubcategoriaController {
       }
     }
   })
-  async createNewSubcategoria(@Body() payload: CreateSubcategoriaDto) {
+  async createNewSubcategoria(@Admin() admin:AdminJwtPayload, @Body() payload: CreateSubcategoriaDto) {
     const createSubcategoriaService: CreateSubcategoriaService = this.modulesRefs.get(CreateSubcategoriaService);
     return await createSubcategoriaService.createNewSubcategoria(payload);
   }

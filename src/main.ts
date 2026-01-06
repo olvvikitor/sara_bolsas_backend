@@ -8,10 +8,18 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
 
-    const config = new DocumentBuilder()
+  const config = new DocumentBuilder()
     .setTitle('Sara bolsas')
     .setDescription('Documentação sara bolsas')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        in: 'header',
+      },
+    )
     .build()
     ;
 

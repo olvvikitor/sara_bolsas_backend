@@ -14,8 +14,8 @@ import { Admin } from '../../decorators/Admin';
 export default class CategoriaController {
   constructor(private moduleRefs: ModuleRef) {}
 
-  @UseGuards(AuthGuard)
   @Post('new')
+  @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Cria uma nova categoria' })
   @ApiResponse({ status: 201, description: 'Categoria criada com sucesso.', type: ResponseCategoryDto })
@@ -26,12 +26,8 @@ export default class CategoriaController {
       value: { nome: 'Bolsas', descricao: 'Categoria de bolsas femininas' , tipo_categoria: 'FEMININA'}
     }
   }})
-  @UseGuards(AuthGuard)
   public async createNewCategoria(
    @Admin() admin:AdminJwtPayload, @Body() createCategoriaDto: CreateCategoriaDto) {
-    if(admin.type !== 'ADMIN'){
-      throw new UnauthorizedException('Acesso negado');
-    }
     const createCategoriaService: CreateCategoriaService = this.moduleRefs.get(CreateCategoriaService);
     return await createCategoriaService.creatNewCategoria(createCategoriaDto);
   }
@@ -62,6 +58,8 @@ export default class CategoriaController {
   }
 
   @Post('update/:id')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Atualiza uma categoria pelo id' })
   @ApiResponse({ status: 200, description: 'Categoria atualizada com sucesso.', type: ResponseCategoryDto })
   @ApiResponse({ status: 404, description: 'Categoria não encontrada.' })
@@ -72,16 +70,21 @@ export default class CategoriaController {
       value: { nome: 'Bolsas Atualizadas', descricao: 'Nova descrição' }
     }
   }})
-  public async updateById(@Param('id') id: string, @Body() payload: CreateCategoriaDto) {
+
+  public async updateById(@Admin() admin:AdminJwtPayload,@Param('id') id: string, @Body() payload: CreateCategoriaDto) {
     const updateCategoriaService: UpdateCategoriaService = this.moduleRefs.get(UpdateCategoriaService);
     return await updateCategoriaService.updateCategoriaById(id, payload);
   }
+
   @Delete('delete/:id')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Deleta uma categoria pelo id' })
   @ApiResponse({ status: 201, description: 'Categoria deletada com sucesso.'})
   @ApiResponse({ status: 404, description: 'Categoria não encontrada.' })
-  public async deleteById(@Param('id') id: string) {
+  public async deleteById(@Admin() admin:AdminJwtPayload,@Param('id') id: string) {
     const updateCategoriaService: UpdateCategoriaService = this.moduleRefs.get(UpdateCategoriaService);
     return await updateCategoriaService.deleteCategoriaById(id);
   }
+   
 }

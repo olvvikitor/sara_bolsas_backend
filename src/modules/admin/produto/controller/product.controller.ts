@@ -9,6 +9,7 @@ import {
   Post,
   UploadedFile,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateProductDto } from '../dtos/Product';
@@ -20,9 +21,11 @@ import {
 import IStorageProvider from 'src/shared/providers/storage/IStorageProvider';
 import CreateProdutoService from '../services/create.produto.service';
 import { ModuleRef } from '@nestjs/core';
-import { ApiBody, ApiConsumes, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { memoryStorage } from 'multer';
 import FindProductsService from '../services/find-product.service';
+import { AdminJwtPayload, AuthGuard } from 'src/shared/providers/auth/AuthGuard';
+import { Admin } from '../../decorators/Admin';
 
 @ApiTags('Products')
 @Controller('product')
@@ -34,6 +37,8 @@ export default class ProductController {
   ) {}
 
   @Post('newProduct')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     type: CreateProductDto,
@@ -54,6 +59,7 @@ export default class ProductController {
     ),
   )
   async createNewProduct(
+    @Admin() admin:AdminJwtPayload,
     @UploadedFiles()
     files: {
       img_interna?: Express.Multer.File[];
