@@ -8,6 +8,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import LoginAdminModule from './modules/admin/login/loginAdmin.module';
 import { AuthModule } from './shared/providers/auth/auth.module';
+import ClienteModule from './modules/cliente/cliente.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { AuthModule } from './shared/providers/auth/auth.module';
       serveRoot: '/uploads',
     }),
 
-    CategoriaModule, SubcategoriaModule, ProductModule, LoginAdminModule,AuthModule],
+    CategoriaModule, SubcategoriaModule, ProductModule, LoginAdminModule,AuthModule,ClienteModule],
   controllers: [],
   providers: [],
 })

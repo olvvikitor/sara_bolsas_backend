@@ -37,13 +37,11 @@ export class Diskprovider implements MulterOptionsFactory, IStorageProvider {
   async delete(url: string | undefined): Promise<void> {
     if(url){
     const filename = url.split('uploads/')[1]
-    console.log(filename)
     const filePath = path.resolve(process.cwd(), 'uploads', filename);
 
     try {
       await fs.promises.stat(filePath); // Verifica se existe
       await fs.promises.unlink(filePath); // Remove
-      console.log(`Arquivo ${filename} excluído com sucesso.`);
     } catch (error) {
       console.error('Erro ao tentar excluir o arquivo:', error);
       throw new Error('Arquivo não encontrado');

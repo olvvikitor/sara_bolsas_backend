@@ -19,7 +19,6 @@ model Categoria {
   nome     String
   tipo     TipoCategoria   // 'MASCULINA' | 'FEMININA'
   subcategorias Subcategoria[]
-
   Produto Produto[]
 }
 
@@ -70,7 +69,6 @@ model ProdutoColecao {
   colecaoId  String
   produto    Produto  @relation(fields: [produtoId], references: [id])
   colecao    Colecao  @relation(fields: [colecaoId], references: [id])
-
   @@id([produtoId, colecaoId])
 }
 

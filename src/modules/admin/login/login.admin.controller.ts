@@ -13,7 +13,6 @@ export class LoginAdminController{
     @ApiOperation({ summary: 'Login de administrador e retorno de token' })
     @Post('returnToken')
     async login(@Body() payload:LoginAdminDTO){
-        console.log(payload)
         return await this.loginAdminService.loginAdmin(payload);
     }
 
