@@ -9,7 +9,6 @@ import { CadastroClienteDto } from "../dtos/createClienteDto";
 export class CadastroController {
 
     constructor(@Inject()private readonly cadastroClienteService:CadastroClienteService){
-        
     }
 
     @Post('cliente/new')
@@ -17,4 +16,7 @@ export class CadastroController {
     async cadastroCliente(@Body() payload: CadastroClienteDto) {
         return await this.cadastroClienteService.cadastrarCliente(payload);
     }
+
+    
+
 }
