@@ -42,6 +42,8 @@ model Produto {
   descricao         String
   largura           Float
   altura            Float
+  peso              Float?
+  profundidade      Float?
   emPromocao        Boolean
   precoPromocional  Float?          // obrigatório se emPromocao = true
   imagemInterna     String[]

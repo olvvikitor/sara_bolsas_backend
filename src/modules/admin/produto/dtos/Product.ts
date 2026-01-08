@@ -29,6 +29,56 @@ export class CreateProductDto {
   @Min(0)
   preco: number;
 
+  @ApiProperty({
+    description: 'Quantidade em estoque do produto',
+    example: 50,
+  })
+  @Type(() => Number)
+  @IsNumber({}, { message: 'estoque deve ser um número' })
+  @IsPositive()
+  estoque: number;
+
+  @ApiProperty({
+    description: 'Quantidade mínima em estoque para alerta',
+    example: 10,
+  })
+  @Type(() => Number)
+  @IsNumber({}, { message: 'quantidade_minima_estoque deve ser um número' })
+  @IsPositive()
+  quantidade_minima_estoque: number;
+
+  @ApiProperty({
+    description: 'Indica se deve alertar quando o estoque atingir a quantidade mínima',
+    example: true,
+  })
+  @Type(() => Boolean)
+  @IsBoolean()
+  alertar_estoque: boolean;
+
+  @ApiProperty({    description: 'Unidade de medida do produto',
+    example: 'unidade, kg, litro',
+  })
+  @IsString()
+  unidade_medida: string;
+
+  @ApiProperty({
+    description: 'Peso do produto (kg)',
+    example: 0.5,
+  })
+  @Type(() => Number)
+  @IsNumber({}, { message: 'peso deve ser um número' })
+  @IsPositive()
+  peso: number;
+
+  @ApiProperty({
+    description: 'Profundidade do produto (cm)',
+    example: 15,
+  })
+  @Type(() => Number)
+  @IsNumber({}, { message: 'profundidade deve ser um número' })
+  @IsPositive()
+  profundidade: number;
+
   @ApiPropertyOptional({
     description: 'Descrição detalhada do produto',
     example: 'Bolsa feminina em couro legítimo, forro interno e bolso com zíper.',

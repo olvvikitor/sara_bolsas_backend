@@ -9,7 +9,7 @@ export default class ProductRepository{
     
   }
   async createNewProduct(payload:CreateProductDto):Promise<void>{
-    await this.prismaService.produto.create({
+    const produto = await this.prismaService.produto.create({
       data:{
         altura: payload.altura,
         descricao:payload.descricao,
@@ -21,9 +21,16 @@ export default class ProductRepository{
         categoriaId:payload.id_categoria,
         precoPromocional:payload.precoPromocional,
         imagemExterna:payload.img_externa_url,
-        imagemInterna:payload.img_interna_url
+        imagemInterna:payload.img_interna_url,
+        estoque:{
+          create:{
+            quantidade:payload.estoque,
+            unidade:payload.unidade_medida,
+            alertaMinimo:payload.alertar_estoque,
+            quantidadeMinima:payload.quantidade_minima_estoque,   
+        }
       }
-    })
+    }});
   }
   async findById(id:string):Promise<Produto>{
     return await this.prismaService.produto.findFirst({

@@ -3,6 +3,7 @@ import ProductRepository from '../repository/product.repository';
 import { CreateProductDto } from '../dtos/Product';
 import FindCategoriaService from '../../categoria/services/get-categoria.service';
 import FindSubcategoryService from '../../subcategoria/services/findsubcategoryById';
+import { CreateEstoqueService } from '../../estoque/services/create.estoque.minimo';
 
 @Injectable()
 export default class CreateProdutoService {
@@ -10,6 +11,7 @@ export default class CreateProdutoService {
     @Inject() private produtoRepository: ProductRepository,
     @Inject() private categoryService: FindCategoriaService,
     @Inject() private subcategoryService: FindSubcategoryService,
+    @Inject() private createEstoqueService: CreateEstoqueService,
   ) {}
   async createNewProduct(payload: CreateProductDto): Promise<void> {
 
@@ -25,8 +27,7 @@ export default class CreateProdutoService {
     );
     if (!categoria) {
       throw new NotFoundException('Categoria não encontrada');
-    }
-    
+    }    
     await this.produtoRepository.createNewProduct(payload);
   }
 }

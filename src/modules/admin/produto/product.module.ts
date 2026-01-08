@@ -7,9 +7,10 @@ import { ConfigModuleAplication } from 'src/config/config.module';
 import SubcategoriaModule from '../subcategoria/subcategoria.module';
 import CategoriaModule from '../categoria/categoria.module';
 import FindProductsService from './services/find-product.service';
+import { EstoqueModule } from '../estoque/estoque.module';
 
 @Module({
-  imports:[ConfigModuleAplication,StorageModule,SubcategoriaModule, CategoriaModule],
+  imports:[ConfigModuleAplication,StorageModule,EstoqueModule, SubcategoriaModule, CategoriaModule],
   controllers:[ProductController],
   providers:[CreateProdutoService, FindProductsService, ProductRepository]
 })

@@ -9,6 +9,7 @@ import { join } from 'path';
 import LoginAdminModule from './modules/admin/login/loginAdmin.module';
 import { AuthModule } from './shared/providers/auth/auth.module';
 import ClienteModule from './modules/cliente/cliente.module';
+import { EstoqueModule } from './modules/admin/estoque/estoque.module';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import ClienteModule from './modules/cliente/cliente.module';
       serveRoot: '/uploads',
     }),
 
-    CategoriaModule, SubcategoriaModule, ProductModule, LoginAdminModule,AuthModule,ClienteModule],
+    CategoriaModule,EstoqueModule, SubcategoriaModule, ProductModule, LoginAdminModule,AuthModule,ClienteModule],
   controllers: [],
   providers: [],
 })
