@@ -3,6 +3,11 @@ import { Prisma, Produto } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma.service';
 import { CreateProductDto } from '../dtos/Product';
 
+
+export type ProdutoWithEstoque = Prisma.ProdutoGetPayload<{
+  include: { estoque: true };
+}>;
+
 @Injectable()
 export default class ProductRepository{
   constructor (private prismaService:PrismaService) {
@@ -32,15 +37,22 @@ export default class ProductRepository{
       }
     }});
   }
-  async findById(id:string):Promise<Produto>{
+  async findById(id:string):Promise<ProdutoWithEstoque>{
     return await this.prismaService.produto.findFirst({
       where:{
         id:id
       },
+      include:{
+        estoque:true
+      }
     })
   }
-  async findAll():Promise<Array<Produto>>{
-    return await this.prismaService.produto.findMany()
+  async findAll():Promise<Array<ProdutoWithEstoque>>{
+    return await this.prismaService.produto.findMany({
+      include:{
+        estoque:true
+      }
+    })
   }
 
 }  

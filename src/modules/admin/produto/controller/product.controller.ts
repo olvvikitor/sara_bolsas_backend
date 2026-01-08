@@ -7,6 +7,7 @@ import {
   Param,
   ParseFilePipeBuilder,
   Post,
+  Req,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -26,6 +27,7 @@ import { memoryStorage } from 'multer';
 import FindProductsService from '../services/find-product.service';
 import { AdminJwtPayload, AuthGuard } from 'src/shared/providers/auth/AuthGuard';
 import { Admin } from '../../decorators/Admin';
+import { Request } from 'express';
 
 @ApiTags('Products')
 @Controller('product')
@@ -91,12 +93,24 @@ export default class ProductController {
 
     return createProductService.createNewProduct(data);
   }
+
+
   @ApiOperation({summary:'Busca por todos os produtos'})
   @ApiResponse({status:200, description:'Produto encontrado com sucesso'})
+  @ApiBearerAuth()
   @Get('all')
-  async findAll(){
+  @UseGuards(AuthGuard)
+  async findAll(@Req() request:Request){
     const findProductService:FindProductsService = this.moduleRefs.get(FindProductsService)
-    return findProductService.findAll()
+    const products = await findProductService.findAll()
+    if(
+      request.userData == null || request.userData.type != 'ADMIN'
+    ){
+      products.forEach(product=>{
+        delete product.estoque
+      })
+    }
+    return products
   }
 
 
@@ -104,8 +118,17 @@ export default class ProductController {
   @ApiResponse({status:200, description:'Produto encontrado com sucesso'})
   @ApiResponse({status:404, description:'Produto não encontrado'})
   @Get('product:/id')
-  async findById(@Param('id') id:string){
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  async findById(@Req() request:Request, @Param('id') id:string){
     const findProductService:FindProductsService = this.moduleRefs.get(FindProductsService)
-    return findProductService.findproductById(id)
+    const product = await findProductService.findproductById(id)
+    if(
+     request.userData == null || request.userData.type != 'ADMIN'
+    ){
+      delete product.estoque
+    }
+    return product
+
   }
 }
