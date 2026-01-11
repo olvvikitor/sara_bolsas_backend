@@ -20,6 +20,13 @@ export default class SubcategoriaRepository{
       }
     })
   }
+  public async deleteById(id:string):Promise<Subcategoria>{
+    return await this.prismaService.subcategoria.delete({
+      where:{
+        id:id
+      }
+    })
+  }
   public async getSubcategoriabyName(name:string):Promise<Subcategoria>{
     return await this.prismaService.subcategoria.findFirst({
       where:{

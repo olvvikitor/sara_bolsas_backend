@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import { CreateSubcategoriaDto } from '../dtos/create_subcategoria.dto';
 import { ModuleRef } from '@nestjs/core';
 import CreateSubcategoriaService from '../services/create-subcategoria.service';
@@ -46,6 +46,11 @@ export default class SubcategoriaController {
   async getAll(){
     const findSubcategoriaService: FindSubcategoryService = this.modulesRefs.get(FindSubcategoryService);
     return await findSubcategoriaService.findAll()
+  }
+
+  @Delete('delete:/id')
+  async deleteSubCategoriaById(@Param('id') id:string){
+    await this.createNewSubcategoria()
   }
 
 }

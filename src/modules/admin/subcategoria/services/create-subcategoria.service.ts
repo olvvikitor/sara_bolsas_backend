@@ -26,4 +26,12 @@ export default class CreateSubcategoriaService {
 
     await this.subcategoriaRepository.createSubcategory(payload);
   }
+
+  async deleteSubCategoriaById(id:string):Promise<void>{
+    const subcategoria = await this.subcategoriaRepository.getSubcategoriabyId(id)
+    if (!subcategoria){
+      throw new NotFoundException('Subcategoria não encontrada')
+    }
+    await this.subcategoriaRepository.deleteById(id)
+  }
 }
