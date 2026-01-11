@@ -38,4 +38,12 @@ export default class SubcategoriaRepository{
     return await this.prismaService.subcategoria.findMany({ include: { categoria: true } })
   }
 
+  public async updateById(id: string, payload: Prisma.SubcategoriaUncheckedUpdateInput): Promise<Subcategoria> {
+    return await this.prismaService.subcategoria.update({
+      where: { id },
+      data: payload,
+      include: { categoria: true }
+    })
+  }
+
 }
