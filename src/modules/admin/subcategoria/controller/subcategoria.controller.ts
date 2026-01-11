@@ -49,8 +49,9 @@ export default class SubcategoriaController {
   }
 
   @Delete('delete:/id')
-  async deleteSubCategoriaById(@Param('id') id:string){
-    await this.createNewSubcategoria()
+  async deleteSubCategoriaById(@Admin() admin :AdminJwtPayload, @Param('id') id:string){
+    const createSubcategoriaService: CreateSubcategoriaService = this.modulesRefs.get(CreateSubcategoriaService);
+    createSubcategoriaService.deleteSubCategoriaById(id)
   }
 
 }
