@@ -43,8 +43,7 @@ export class Diskprovider implements MulterOptionsFactory, IStorageProvider {
       await fs.promises.stat(filePath); // Verifica se existe
       await fs.promises.unlink(filePath); // Remove
     } catch (error) {
-      console.error('Erro ao tentar excluir o arquivo:', error);
-      throw new Error('Arquivo não encontrado');
+      return
     }
   }
   return

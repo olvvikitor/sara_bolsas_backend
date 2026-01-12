@@ -8,10 +8,11 @@ import SubcategoriaModule from '../subcategoria/subcategoria.module';
 import CategoriaModule from '../categoria/categoria.module';
 import FindProductsService from './services/find-product.service';
 import { EstoqueModule } from '../estoque/estoque.module';
+import { DeleteProductService } from './services/delete-produto.service';
 
 @Module({
   imports:[ConfigModuleAplication,StorageModule,EstoqueModule, SubcategoriaModule, CategoriaModule],
   controllers:[ProductController],
-  providers:[CreateProdutoService, FindProductsService, ProductRepository]
+  providers:[CreateProdutoService, FindProductsService, ProductRepository,DeleteProductService]
 })
 export default class ProductModule{}

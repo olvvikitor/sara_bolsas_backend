@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Inject,
@@ -28,6 +29,7 @@ import FindProductsService from '../services/find-product.service';
 import { AdminJwtPayload, AuthGuard } from 'src/shared/providers/auth/AuthGuard';
 import { Admin } from '../../decorators/Admin';
 import { Request } from 'express';
+import { DeleteProductService } from '../services/delete-produto.service';
 
 @ApiTags('Products')
 @Controller('product')
@@ -129,6 +131,13 @@ export default class ProductController {
       delete product.estoque
     }
     return product
+
+  }
+
+  @Delete(':id')
+  async deleteById(@Param('id') id:string){
+        const deleteProduct:DeleteProductService = this.moduleRefs.get(DeleteProductService)
+        await deleteProduct.delete(id)
 
   }
 }
