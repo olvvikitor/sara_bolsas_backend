@@ -12,15 +12,6 @@ export class UpdateSubcategoriaDto {
   nome?: string;
 
   @ApiProperty({
-    description: 'Descrição da subcategoria',
-    example: 'Subcategoria de bolsas de couro',
-    required: false,
-  })
-  @IsString({ message: 'A descrição deve ser uma string' })
-  @IsOptional()
-  descricao?: string;
-
-  @ApiProperty({
     description: 'id da categoria pai',
     example: 'a3f1c2e4-5b6d-4e7f-8a9b-123456789abc',
     required: false,

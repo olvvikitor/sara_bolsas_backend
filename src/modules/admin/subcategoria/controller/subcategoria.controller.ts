@@ -5,7 +5,6 @@ import { ModuleRef } from '@nestjs/core';
 import CreateSubcategoriaService from '../services/create-subcategoria.service';
 import UpdateSubcategoriaService from '../services/update-subcategoria.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
-import FindCategoriaService from '../../categoria/services/get-categoria.service';
 import FindSubcategoryService from '../services/findsubcategoryById';
 import { AdminJwtPayload, AuthGuard } from 'src/shared/providers/auth/AuthGuard';
 import { Admin } from '../../decorators/Admin';
@@ -15,7 +14,9 @@ import { NotFoundException, ConflictException } from '@nestjs/common';
 @Controller('subcategoria')
 export default class SubcategoriaController {
 
-  constructor(private modulesRefs: ModuleRef) { }
+  constructor(private updateCategorySerivice:UpdateSubcategoriaService,
+     private createSubCategoryService:CreateSubcategoriaService,
+     private findCategoryServicee:FindSubcategoryService) { }
 
   @Post('new')
   @UseGuards(AuthGuard)
@@ -42,8 +43,7 @@ export default class SubcategoriaController {
   })
   async createNewSubcategoria(@Admin() admin: AdminJwtPayload, @Body() payload: CreateSubcategoriaDto) {
     try {
-      const createSubcategoriaService: CreateSubcategoriaService = this.modulesRefs.get(CreateSubcategoriaService);
-      return await createSubcategoriaService.createNewSubcategoria(payload);
+      return await this.createSubCategoryService.createNewSubcategoria(payload);
     } catch (error) {
       if (error instanceof ConflictException || error instanceof NotFoundException) {
         throw error;
@@ -57,8 +57,7 @@ export default class SubcategoriaController {
   @ApiResponse({ status: 200, description: 'Lista de subcategorias retornada com sucesso.' })
   @ApiResponse({ status: 500, description: 'Erro ao buscar subcategorias.' })
   async getAll() {
-    const findSubcategoriaService: FindSubcategoryService = this.modulesRefs.get(FindSubcategoryService);
-    return await findSubcategoriaService.findAll();
+    return await this.findCategoryServicee.findAll();
   }
 
   @Get(':id')
@@ -71,8 +70,7 @@ export default class SubcategoriaController {
     if (!id || id.trim() === '') {
       throw new BadRequestException('ID inválido');
     }
-    const findSubcategoriaService: FindSubcategoryService = this.modulesRefs.get(FindSubcategoryService);
-    const subcategoria = await findSubcategoriaService.findById(id);
+    const subcategoria = await this.findCategoryServicee.findById(id);
     if (!subcategoria) {
       throw new NotFoundException('Subcategoria não encontrada');
     }
@@ -114,8 +112,7 @@ export default class SubcategoriaController {
     if (!payload || Object.keys(payload).length === 0) {
       throw new BadRequestException('Pelo menos um campo deve ser fornecido para atualização');
     }
-    const updateSubcategoriaService: UpdateSubcategoriaService = this.modulesRefs.get(UpdateSubcategoriaService);
-    return await updateSubcategoriaService.updateSubcategoria(id, payload);
+    return await this.updateCategorySerivice.updateSubcategoria(id, payload);
   }
 
   @Delete(':id')
@@ -127,12 +124,9 @@ export default class SubcategoriaController {
   @ApiResponse({ status: 204, description: 'Subcategoria deletada com sucesso.' })
   @ApiResponse({ status: 404, description: 'Subcategoria não encontrada.' })
   @ApiResponse({ status: 400, description: 'ID inválido.' })
+  @ApiResponse({ status: 422, description: 'Essa subcategoria está sendo referenciada a um ou mais produtos.'})
   async deleteSubCategoriaById(@Admin() admin: AdminJwtPayload, @Param('id') id: string) {
-    if (!id || id.trim() === '') {
-      throw new BadRequestException('ID inválido');
-    }
-    const createSubcategoriaService: CreateSubcategoriaService = this.modulesRefs.get(CreateSubcategoriaService);
-    await createSubcategoriaService.deleteSubCategoriaById(id);
+    await this.createSubCategoryService.deleteSubCategoriaById(id);
 
   }
 }

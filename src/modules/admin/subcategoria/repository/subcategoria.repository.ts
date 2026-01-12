@@ -3,6 +3,12 @@ import { Prisma, Subcategoria } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma.service';
 
 
+export type SubcategoriaWithProduct = Prisma.SubcategoriaGetPayload<{
+  include:{
+    produtos:true
+  }
+}>
+
 @Injectable()
 export default class SubcategoriaRepository{
   constructor (private prismaService:PrismaService) {
@@ -13,10 +19,13 @@ export default class SubcategoriaRepository{
       data:payload
     })
   }
-  public async getSubcategoriabyId(id:string):Promise<Subcategoria>{
+  public async getSubcategoriabyId(id:string):Promise<SubcategoriaWithProduct>{
     return await this.prismaService.subcategoria.findFirst({
       where:{
         id:id
+      },
+      include:{
+        produtos:true
       }
     })
   }
@@ -41,7 +50,9 @@ export default class SubcategoriaRepository{
   public async updateById(id: string, payload: Prisma.SubcategoriaUncheckedUpdateInput): Promise<Subcategoria> {
     return await this.prismaService.subcategoria.update({
       where: { id },
-      data: payload,
+      data: {
+        nome:payload.nome
+      },
       include: { categoria: true }
     })
   }

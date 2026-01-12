@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException, BadRequestException, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma.service';
 import { CreateSubcategoriaDto } from '../dtos/create_subcategoria.dto';
 import SubcategoriaRepository from '../repository/subcategoria.repository';
@@ -36,22 +36,17 @@ export default class CreateSubcategoriaService {
   }
 
   async deleteSubCategoriaById(id: string): Promise<void> {
-    try {
-      if (!id || id.trim() === '') {
-        throw new BadRequestException('ID inválido');
-      }
-
       const subcategoria = await this.subcategoriaRepository.getSubcategoriabyId(id);
       if (!subcategoria) {
         throw new NotFoundException('Subcategoria não encontrada');
       }
+      if(
+        subcategoria.produtos.length>0
+      ){
+        throw new UnprocessableEntityException("Essa subcategoria está sendo referenciada a um ou mais produtos.")
+      }
+
 
       await this.subcategoriaRepository.deleteById(id);
-    } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new BadRequestException('Erro ao deletar subcategoria');
-    }
   }
 }
