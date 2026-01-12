@@ -5,7 +5,8 @@ import { PrismaService } from 'src/config/prisma.service';
 
 export type SubcategoriaWithProduct = Prisma.SubcategoriaGetPayload<{
   include:{
-    produtos:true
+    produtos:true,
+    categoria:true
   }
 }>
 
@@ -25,7 +26,8 @@ export default class SubcategoriaRepository{
         id:id
       },
       include:{
-        produtos:true
+        produtos:true,
+        categoria:true
       }
     })
   }
@@ -43,8 +45,10 @@ export default class SubcategoriaRepository{
       }
     })
   }
-  public async getAllSubcategoria():Promise<Subcategoria[]>{
-    return await this.prismaService.subcategoria.findMany({ include: { categoria: true } })
+  public async getAllSubcategoria():Promise<Array<SubcategoriaWithProduct>>{
+    return await this.prismaService.subcategoria.findMany({ include: { produtos: true,categoria:true
+
+     } })
   }
 
   public async updateById(id: string, payload: Prisma.SubcategoriaUncheckedUpdateInput): Promise<Subcategoria> {

@@ -42,14 +42,8 @@ export default class SubcategoriaController {
     }
   })
   async createNewSubcategoria(@Admin() admin: AdminJwtPayload, @Body() payload: CreateSubcategoriaDto) {
-    try {
       return await this.createSubCategoryService.createNewSubcategoria(payload);
-    } catch (error) {
-      if (error instanceof ConflictException || error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new BadRequestException('Erro ao criar subcategoria');
-    }
+
   }
 
   @Get('getAll')
