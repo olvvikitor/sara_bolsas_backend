@@ -12,6 +12,7 @@ COPY . .
 
 RUN npx prisma generate
 RUN npm run build
+RUN npx prisma migrate deploy
 
 # ========================
 # Runtime
@@ -31,4 +32,4 @@ COPY --from=builder /app/prisma ./prisma
 EXPOSE 3000
 
 # 🔥 comando correto
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "node dist/main.js"]
