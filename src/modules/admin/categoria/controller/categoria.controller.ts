@@ -23,7 +23,7 @@ export default class CategoriaController {
   @ApiBody({ type: CreateCategoriaDto, description: 'Dados para criação de categoria', examples: {
     exemplo: {
       summary: 'Exemplo de categoria',
-      value: { nome: 'Bolsas', descricao: 'Categoria de bolsas femininas' , tipo_categoria: 'FEMININA'}
+      value: { nome: 'Bolsas', tipo: 'FEMININA'}
     }
   }})
   public async createNewCategoria(
