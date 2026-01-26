@@ -67,7 +67,7 @@ export default class CategoriaController {
   @ApiBody({ type: CreateCategoriaDto, description: 'Dados para atualização da categoria', examples: {
     exemplo: {
       summary: 'Exemplo de atualização',
-      value: { nome: 'Bolsas Atualizadas', descricao: 'Nova descrição' }
+      value: { nome: 'Bolsas Atualizadas', descricao: 'Nova descrição', tipo_categoria: 'FEMININA' }
     }
   }})
 
