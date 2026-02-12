@@ -47,6 +47,13 @@ export default class ProductRepository{
       }
     })
   }
+  async deleteById(id:string):Promise<void>{
+     await this.prismaService.produto.delete({
+      where:{
+        id:id
+      }
+    })
+  }
   async findAll():Promise<Array<ProdutoWithEstoque>>{
     return await this.prismaService.produto.findMany({
       include:{

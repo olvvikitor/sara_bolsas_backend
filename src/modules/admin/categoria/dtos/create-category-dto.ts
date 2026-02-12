@@ -21,5 +21,5 @@ export class CreateCategoriaDto {
     example: TIPO_CATEGORIA.MASCULINA,
   })
   @IsEnum(TIPO_CATEGORIA, { message: 'Tipo inválido. Use MASCULINA ou FEMININA' })
-  tipo_categoria: TIPO_CATEGORIA
+  tipo: TIPO_CATEGORIA
 }

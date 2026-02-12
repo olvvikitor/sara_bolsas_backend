@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { CreateCategoriaDto } from '../dtos/create-category-dto';
 import CreateCategoriaService from '../services/create-categoria.service';
 import { ModuleRef } from '@nestjs/core';
@@ -23,7 +23,7 @@ export default class CategoriaController {
   @ApiBody({ type: CreateCategoriaDto, description: 'Dados para criação de categoria', examples: {
     exemplo: {
       summary: 'Exemplo de categoria',
-      value: { nome: 'Bolsas', descricao: 'Categoria de bolsas femininas' , tipo_categoria: 'FEMININA'}
+      value: { nome: 'Bolsas', tipo: 'FEMININA'}
     }
   }})
   public async createNewCategoria(
@@ -57,7 +57,7 @@ export default class CategoriaController {
     return await findcategoriaService.findAllCategoria();
   }
 
-  @Post('update/:id')
+  @Put('update/:id')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Atualiza uma categoria pelo id' })
@@ -67,7 +67,7 @@ export default class CategoriaController {
   @ApiBody({ type: CreateCategoriaDto, description: 'Dados para atualização da categoria', examples: {
     exemplo: {
       summary: 'Exemplo de atualização',
-      value: { nome: 'Bolsas Atualizadas', descricao: 'Nova descrição' }
+      value: { nome: 'Bolsas Atualizadas', tipo: 'FEMININA' }
     }
   }})
 

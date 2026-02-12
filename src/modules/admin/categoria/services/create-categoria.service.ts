@@ -17,7 +17,7 @@ export default class CreateCategoriaService{
     }
     await this.categoriaRepository.createCategoria({
       nome:createCategoriaDto.nome,
-      tipo:createCategoriaDto.tipo_categoria
+      tipo:createCategoriaDto.tipo
     })
   }
 
