@@ -14,9 +14,9 @@ export class StorageFactory {
 
   createStorageProvider() {
     const type = this.configService.get('ENVIRONMENT');
-    if (type === 'dev') {
-      return this.diskProvider;
+    if (type === 'deploy') {
+      return this.s3Storage;
     }
-    return this.s3Storage
+    return this.diskProvider
   }
 }
