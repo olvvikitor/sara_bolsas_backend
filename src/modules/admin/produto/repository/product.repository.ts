@@ -14,7 +14,7 @@ export default class ProductRepository{
     
   }
   async createNewProduct(payload:CreateProductDto):Promise<void>{
-    const produto = await this.prismaService.produto.create({
+     await this.prismaService.produto.create({
       data:{
         altura: payload.altura,
         descricao:payload.descricao,
@@ -39,25 +39,32 @@ export default class ProductRepository{
   }
   async findById(id:string):Promise<ProdutoWithEstoque>{
     return await this.prismaService.produto.findFirst({
-      where:{
-        id:id
-      },
+      where:{AND:{ativo:true, id:id}},
       include:{
-        estoque:true
-      }
+        estoque:true,
+        subcategoria:true, 
+        categoria:true
+      },
+      
     })
   }
   async deleteById(id:string):Promise<void>{
-     await this.prismaService.produto.delete({
+     await this.prismaService.produto.update({
       where:{
         id:id
-      }
+      },
+      data:{ativo:false}
     })
   }
   async findAll():Promise<Array<ProdutoWithEstoque>>{
     return await this.prismaService.produto.findMany({
       include:{
-        estoque:true
+        estoque:true,
+        categoria:true,
+        subcategoria:true
+      },
+      where:{
+        ativo:true
       }
     })
   }

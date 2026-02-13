@@ -55,7 +55,7 @@ model Produto {
   colecoes          ProdutoColecao[]
   estoque           Estoque?
   vendas            VendaProduto[]
-
+  ativo Boolean @default(true)
   PedidoItem PedidoItem[]
 }
 

@@ -8,6 +8,7 @@ import {
   Param,
   ParseFilePipeBuilder,
   Post,
+  Put,
   Req,
   UploadedFile,
   UploadedFiles,
@@ -134,10 +135,14 @@ export default class ProductController {
 
   }
 
-  @Delete(':id')
+  @ApiOperation({summary:'Altera o status de produto para inativo no seu id'})
+  @ApiResponse({status:200, description:'Produto alterado com sucesso'})
+  @ApiResponse({status:404, description:'Produto não encontrado'})
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @Put('inat/:id')
   async deleteById(@Param('id') id:string){
         const deleteProduct:DeleteProductService = this.moduleRefs.get(DeleteProductService)
         await deleteProduct.delete(id)
-
   }
 }

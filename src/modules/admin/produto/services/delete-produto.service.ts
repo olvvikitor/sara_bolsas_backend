@@ -12,7 +12,7 @@ export class DeleteProductService{
     async delete(id:string):Promise<void>{
         const product = await this.productRepository.findById(id)
         if (!product){
-            throw new NotFoundException('Produto não encontrado')
+            throw new NotFoundException('Produto não encontrado ou já desativado')
             }
         await this.productRepository.deleteById(id)
         if(product.imagemExterna.length>0){
