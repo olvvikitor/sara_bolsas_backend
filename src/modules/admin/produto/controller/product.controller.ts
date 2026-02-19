@@ -31,6 +31,8 @@ import { AdminJwtPayload, AuthGuard } from 'src/shared/providers/auth/AuthGuard'
 import { Admin } from '../../decorators/Admin';
 import { Request } from 'express';
 import { DeleteProductService } from '../services/delete-produto.service';
+import UpdateProductService from '../services/UpdateProductService';
+import { UpdadeProductDto } from '../dtos/Update';
 
 @ApiTags('Products')
 @Controller('product')
@@ -39,7 +41,7 @@ export default class ProductController {
     @Inject('IStorageProvider')
     private storageProvider: IStorageProvider,
     private moduleRefs: ModuleRef,
-  ) {}
+  ) { }
 
   @Post('newProduct')
   @UseGuards(AuthGuard)
@@ -64,7 +66,7 @@ export default class ProductController {
     ),
   )
   async createNewProduct(
-    @Admin() admin:AdminJwtPayload,
+    @Admin() admin: AdminJwtPayload,
     @UploadedFiles()
     files: {
       img_interna?: Express.Multer.File[];
@@ -98,18 +100,18 @@ export default class ProductController {
   }
 
 
-  @ApiOperation({summary:'Busca por todos os produtos'})
-  @ApiResponse({status:200, description:'Produto encontrado com sucesso'})
+  @ApiOperation({ summary: 'Busca por todos os produtos' })
+  @ApiResponse({ status: 200, description: 'Produto encontrado com sucesso' })
   @ApiBearerAuth()
   @Get('all')
   @UseGuards(AuthGuard)
-  async findAll(@Req() request:Request){
-    const findProductService:FindProductsService = this.moduleRefs.get(FindProductsService)
+  async findAll(@Req() request: Request) {
+    const findProductService: FindProductsService = this.moduleRefs.get(FindProductsService)
     const products = await findProductService.findAll()
-    if(
+    if (
       request.userData == null || request.userData.type != 'ADMIN'
-    ){
-      products.forEach(product=>{
+    ) {
+      products.forEach(product => {
         delete product.estoque
       })
     }
@@ -117,32 +119,91 @@ export default class ProductController {
   }
 
 
-  @ApiOperation({summary:'Busca por um produto com base no seu id'})
-  @ApiResponse({status:200, description:'Produto encontrado com sucesso'})
-  @ApiResponse({status:404, description:'Produto não encontrado'})
+  @ApiOperation({ summary: 'Busca por um produto com base no seu id' })
+  @ApiResponse({ status: 200, description: 'Produto encontrado com sucesso' })
+  @ApiResponse({ status: 404, description: 'Produto não encontrado' })
   @Get('product:/id')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
-  async findById(@Req() request:Request, @Param('id') id:string){
-    const findProductService:FindProductsService = this.moduleRefs.get(FindProductsService)
+  async findById(@Req() request: Request, @Param('id') id: string) {
+    const findProductService: FindProductsService = this.moduleRefs.get(FindProductsService)
     const product = await findProductService.findproductById(id)
-    if(
-     request.userData == null || request.userData.type != 'ADMIN'
-    ){
+    if (
+      request.userData == null || request.userData.type != 'ADMIN'
+    ) {
       delete product.estoque
     }
     return product
 
   }
 
-  @ApiOperation({summary:'Altera o status de produto para inativo no seu id'})
-  @ApiResponse({status:200, description:'Produto alterado com sucesso'})
-  @ApiResponse({status:404, description:'Produto não encontrado'})
+  @ApiOperation({ summary: 'Altera o status de produto para inativo no seu id' })
+  @ApiResponse({ status: 200, description: 'Produto alterado com sucesso' })
+  @ApiResponse({ status: 404, description: 'Produto não encontrado' })
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @Put('inat/:id')
-  async deleteById(@Param('id') id:string){
-        const deleteProduct:DeleteProductService = this.moduleRefs.get(DeleteProductService)
-        await deleteProduct.delete(id)
+  async deleteById(@Param('id') id: string) {
+    const deleteProduct: DeleteProductService = this.moduleRefs.get(DeleteProductService)
+    await deleteProduct.delete(id)
   }
-}
+
+  @ApiOperation({ summary: 'Update de produto com base no seu id' })
+  @ApiResponse({ status: 200, description: 'Produto alterado com sucesso' })
+  @ApiResponse({ status: 404, description: 'Produto não encontrado' })
+  @ApiResponse({ status: 400, description: 'Payload incorreto' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: UpdadeProductDto,
+  })
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        {
+          name: 'img_interna_nova',
+          maxCount: 1,
+        },
+        {
+          name: 'img_externa_nova',
+          maxCount: 3,
+        },
+      ],
+      { storage: memoryStorage() },
+    ),
+  )
+  @Put('update/:id')
+  async updateById(@Param('id') id: string, @Admin() admin: AdminJwtPayload,
+    @UploadedFiles()
+    files: {
+      img_externa_nova?: Express.Multer.File[];
+      img_interna_nova?: Express.Multer.File[];
+    }, @Body() payload: UpdadeProductDto) {
+    const updateProduct: UpdateProductService = this.moduleRefs.get(UpdateProductService)
+
+
+    if (files.img_externa_nova) {
+      const urlImages = await Promise.all(
+        files.img_externa_nova.map(
+          async (img) => await this.storageProvider.upload(img),
+        ),
+      );
+      payload.img_externa_url = urlImages
+    }
+
+    if (files.img_interna_nova) {
+      const urlImages = await Promise.all(
+        files.img_interna_nova.map(
+          async (img) => await this.storageProvider.upload(img),
+        ),
+      );
+      payload.img_interna_url = urlImages
+    }
+
+
+
+      return await updateProduct.updateProduct(id, payload)
+    }
+  }
+
