@@ -122,7 +122,7 @@ export default class ProductController {
   @ApiOperation({ summary: 'Busca por um produto com base no seu id' })
   @ApiResponse({ status: 200, description: 'Produto encontrado com sucesso' })
   @ApiResponse({ status: 404, description: 'Produto não encontrado' })
-  @Get('product:/id')
+  @Get(':/id')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
   async findById(@Req() request: Request, @Param('id') id: string) {
